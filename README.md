@@ -2,7 +2,9 @@
 
 **Jeremy A. Owen and Jordan M. Horowitz**
 
-This Mathematica notebook accompanies our paper “Size limits sensitivity in all kinetic schemes”. It provides: (1) code to generate and manipulate kinetic schemes representing the mechanism we call “nested hysteresis” for any number of binding sites *n,* and **(2) a computer-assisted demonstration that in the case *n* = 3*,* nested hysteresis with stabilized extremes **can yield an input-output relationship that converges uniformly to a Hill function with *H* = 7.
+>**This is a Markdown version of the Mathematica notebook provided in this repository. Conversion to Markdown was done with the package written by Kuba Podkalicki (https://github.com/kubaPod/M2MD).**
+
+This Mathematica notebook accompanies our paper "Size limits sensitivity in all kinetic schemes" (https://arxiv.org/abs/2112.07777). It provides: (1) code to generate and manipulate kinetic schemes representing the mechanism we call "nested hysteresis" for any number of binding sites n, and (2) a computer-assisted demonstration that in the case n = 3, nested hysteresis with stabilized extremes can yield an input-output relationship that converges uniformly to a Hill function with H = 7.
 
 
 **Generating nested hysteresis schemes**
@@ -10,7 +12,8 @@ This Mathematica notebook accompanies our paper “Size limits sensitivity in al
 Our starting point is the case n = 1, binding and unbinding from a single site.
 
 ```mathematica
-base = Graph[{{0}, {1}}, {{0} -> {1}, {1} -> {0}}, EdgeWeight -> {x, 1}, EdgeLabels -> "EdgeWeight"]
+base = Graph[{{0}, {1}}, {{0} -> {1}, {1} -> {0}}, EdgeWeight -> {x, 1}, 
+    EdgeLabels -> "EdgeWeight"]
 ```
 
 ![08bllbwzcxt2m](img/08bllbwzcxt2m.png)
@@ -18,13 +21,21 @@ base = Graph[{{0}, {1}}, {{0} -> {1}, {1} -> {0}}, EdgeWeight -> {x, 1}, EdgeLab
 This function performs one step of the iterative construction shown in Figure 3(c) of the main text. The parameters x and s control the edge weights, and represent the ligand concentration and a temporal scaling factor, respectively.
 
 ```mathematica
-IterativeStep[G_, s_, x_] := Module[{weights = PropertyValue[{G, #}, EdgeWeight] & /@ EdgeList[G], sortverts = SortBy[VertexList[G], Count[#, 1] &]}, Graph[((#~Join~{0}) & /@ VertexList[G])~Join~((#~Join~{1}) & /@ VertexList[G]), (Map[#~Join~{0} &, EdgeList[G], {2}]~Join~Map[#~Join~{1} &, EdgeList[G], {2}])~Join~{(First[sortverts]~Join~{1}) -> (First[sortverts]~Join~{0}), (Last[sortverts]~Join~{0}) -> (Last[sortverts]~Join~{1})}, EdgeWeight -> (s*weights)~Join~(s*weights)~Join~{1, x}]];
+IterativeStep[G_, s_, x_] := 
+  Module[{weights = PropertyValue[{G, #}, EdgeWeight] & /@ EdgeList[G], 
+       sortverts = SortBy[VertexList[G], Count[#, 1] &]}, 
+  Graph[((#~Join~{0}) & /@ VertexList[G])~Join~((#~Join~{1}) & /@ VertexList[G]), 
+        (Map[#~Join~{0} &, EdgeList[G], {2}]~Join~
+        Map[#~Join~{1} &, EdgeList[G], {2}])~Join~{(First[sortverts]~Join~{1}) -> (First[sortverts]~Join~{0}), 
+        (Last[sortverts]~Join~{0}) -> (Last[sortverts]~Join~{1})}, 
+        EdgeWeight -> (s*weights)~Join~(s*weights)~Join~{1, x}]];
 ```
 
 Here’s an illustration of 3 steps of the iterative construction, up to n = 4. Note that after n = 2, the automatic graph layout doesn’t look like a hypercube, but these are still (subgraphs of) hypercube graphs.
 
 ```mathematica
-Graph[VertexList[#], EdgeList[#], GraphLayout -> "SpringEmbedding"] & /@ NestList[IterativeStep[#, s, x] &, base, 3]
+Graph[VertexList[#], EdgeList[#], GraphLayout -> "SpringEmbedding"] & 
+/@ NestList[IterativeStep[#, s, x] &, base, 3]
 ```
 
 ![01gu4oh4qqlol](img/01gu4oh4qqlol.png)
@@ -32,7 +43,11 @@ Graph[VertexList[#], EdgeList[#], GraphLayout -> "SpringEmbedding"] & /@ NestLis
 This function takes a nested hysteresis scheme (a stage of the iterative construction shown above), and scales the weights of transitions leaving the extreme states by a factor q.
 
 ```mathematica
-StabilizeExtremes[G_, q_] := Module[{n = Round[N@Log[VertexCount[G]]/Log[2]], g}, g = Annotate[{G, ConstantArray[0, n] \[DirectedEdge] ({1}~Join~ConstantArray[0, n - 1])}, EdgeWeight -> (q*PropertyValue[{G, ConstantArray[0, n] \[DirectedEdge] ({1}~Join~ConstantArray[0, n - 1])}, EdgeWeight])]; Annotate[{g, ConstantArray[1, n] \[DirectedEdge] ({0}~Join~ConstantArray[1, n - 1])}, EdgeWeight -> (q*PropertyValue[{g, ConstantArray[1, n] \[DirectedEdge] ({0}~Join~ConstantArray[1, n - 1])}, EdgeWeight])]]
+StabilizeExtremes[G_, q_] := Module[{n = Round[N@Log[VertexCount[G]]/Log[2]], g}, 
+g = Annotate[{G, ConstantArray[0, n] \[DirectedEdge] ({1}~Join~ConstantArray[0, n - 1])}, 
+EdgeWeight -> (q*PropertyValue[{G, ConstantArray[0, n] \[DirectedEdge] ({1}~Join~ConstantArray[0, n - 1])}, EdgeWeight])]; 
+Annotate[{g, ConstantArray[1, n] \[DirectedEdge] ({0}~Join~ConstantArray[1, n - 1])}, 
+EdgeWeight -> (q*PropertyValue[{g, ConstantArray[1, n] \[DirectedEdge] ({0}~Join~ConstantArray[1, n - 1])}, EdgeWeight])]]
 ```
 
 
@@ -129,7 +144,7 @@ Below is a zoom in of the above
 ![0zhxt35nrv6x9](img/0zhxt35nrv6x9.png)
 
 
-To establish uniform convergence, it is enough to show that the magnitude of the difference between these functions is bounded **independently of x** and decreases in s. The following evaluations by Mathematica provide evidence for just such a fact, suggesting that the magnitude of the difference is less than $1\left/s^{1/2}\right.$, no matter the value of x.
+To establish uniform convergence, it is enough to show that the magnitude of the difference between these functions is bounded **independently of x** and decreases in s. The following evaluations by Mathematica provide evidence for just such a fact, suggesting that the magnitude of the difference is less than 1/s^(1/2), no matter the value of x.
 
 ![1w9kuji9gqgk9](img/1w9kuji9gqgk9.png)
 
@@ -144,7 +159,7 @@ To establish uniform convergence, it is enough to show that the magnitude of the
 ```
 
 
-As a sanity check, changing $x^7/\left(1+x^7\right)$ to something different causes one or both of these evaluations to fail.
+As a sanity check, changing x^7/(1+x^7) to something different causes one or both of these evaluations to fail.
 
 ![02zcp2jiru5mf](img/02zcp2jiru5mf.png)
 
