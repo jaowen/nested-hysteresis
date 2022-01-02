@@ -39,11 +39,6 @@ This function takes a nested hysteresis scheme (a stage of the iterative constru
 StabilizeExtremes[G_, q_] := Module[{n = Round[N@Log[VertexCount[G]]/Log[2]], g}, g = Annotate[{G, ConstantArray[0, n] \[DirectedEdge] ({1}~Join~ConstantArray[0, n - 1])}, EdgeWeight -> (q*PropertyValue[{G, ConstantArray[0, n] \[DirectedEdge] ({1}~Join~ConstantArray[0, n - 1])}, EdgeWeight])]; Annotate[{g, ConstantArray[1, n] \[DirectedEdge] ({0}~Join~ConstantArray[1, n - 1])}, EdgeWeight -> (q*PropertyValue[{g, ConstantArray[1, n] \[DirectedEdge] ({0}~Join~ConstantArray[1, n - 1])}, EdgeWeight])]]
 ```
 
-```mathematica
-
-  
- 
-```
 
 This function takes a weighted, directed graph and generates its transition rate matrix.
 
@@ -51,10 +46,6 @@ This function takes a weighted, directed graph and generates its transition rate
 GraphLaplacian[graph_] := Transpose[(# - DiagonalMatrix[Total /@ #]) &@WeightedAdjacencyMatrix[graph]];
 ```
 
-```mathematica
-
-
-```
 
 This function takes a transition rate matrix and finds the steady state distribution π.
 
@@ -62,10 +53,6 @@ This function takes a transition rate matrix and finds the steady state distribu
 SteadyState[L_] := #[[1]]/Total[#[[1]]] &@NullSpace[L];
 ```
 
-```mathematica
-
-
-```
 
 As an illustration, we can find the rate matrix and steady state of the base case: binding to a single site, n = 1.
 
@@ -78,14 +65,7 @@ SteadyState[GraphLaplacian[base]] // FullSimplify
 
 ![0tf95ycd79g45](img/0tf95ycd79g45.png)
 
-```mathematica
 
-```
-
-```mathematica
-
-
-```
 
 **The case** ***n*** **= 3**
 
@@ -119,9 +99,6 @@ PFullyBound = Last[CaseN3 // GraphLaplacian // SteadyState // FullSimplify]
 
 ![1arl7kowkjpv9](img/1arl7kowkjpv9.png)
 
-```mathematica
-
-```
 
 Now, here are some limits.
 
@@ -155,10 +132,6 @@ Below is a zoom in of the above
 
 ![0zhxt35nrv6x9](img/0zhxt35nrv6x9.png)
 
-```mathematica
-
-
-```
 
 To establish uniform convergence, it is enough to show that the magnitude of the difference between these functions is bounded **independently of x** and decreases in s. The following evaluations by Mathematica provide evidence for just such a fact, suggesting that the magnitude of the difference is less than $1\left/s^{1/2}\right.$, no matter the value of x.
 
@@ -174,11 +147,6 @@ To establish uniform convergence, it is enough to show that the magnitude of the
 (*True*)
 ```
 
-```mathematica
-
-  
- 
-```
 
 As a sanity check, changing $x^7/\left(1+x^7\right)$ to something different causes one or both of these evaluations to fail.
 
@@ -192,11 +160,6 @@ As a sanity check, changing $x^7/\left(1+x^7\right)$ to something different caus
 
 ![1w7ddtpyi7cfd](img/1w7ddtpyi7cfd.png)
 
-```mathematica
-
-  
- 
-```
 
 ![08tqprbnd0ejw](img/08tqprbnd0ejw.png)
 
@@ -205,18 +168,3 @@ As a sanity check, changing $x^7/\left(1+x^7\right)$ to something different caus
 ![0zirab9dy5j6j](img/0zirab9dy5j6j.png)
 
 ![1wop634tvme0c](img/1wop634tvme0c.png)
-
-```mathematica
-
-
-```
-
-```mathematica
-
-  
- 
-```
-
-```mathematica
-
-```
