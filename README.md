@@ -4,10 +4,6 @@
 
 This Mathematica notebook accompanies our paper “Size limits sensitivity in all kinetic schemes”. It provides: (1) code to generate and manipulate kinetic schemes representing the mechanism we call “nested hysteresis” for any number of binding sites *n,* and **(2) a computer-assisted demonstration that in the case *n* = 3*,* nested hysteresis with stabilized extremes **can yield an input-output relationship that converges uniformly to a Hill function with *H* = 7.
 
-```mathematica
-
-
-```
 
 **Generating nested hysteresis schemes**
 
